@@ -9,7 +9,7 @@ ttm_encoders = {}
 ttm_encoders.update(resnet_encoders)
 ttm_encoders.update(densenet_encoders)
 ttm_encoders.update(efficientnet_encoders)
-# ttm_encoders.update(convnext_encoders)
+ttm_encoders.update(convnext_encoders)
 ttm_encoders.update(mobilenet_encoders)
 
 @__classinit
@@ -63,7 +63,7 @@ class Encoder(object):
         except:
             raise KeyError('Wrong encoder name `{}`, supported encoders: {}'.format(name, list(ttm_encoders.keys())))
 
-        params = ttm_encoders[name]['params']
+        params = dict(ttm_encoders[name]['params'])
         params.update(depth=depth)
 
         if pretrain is not None:

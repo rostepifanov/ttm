@@ -12,46 +12,46 @@ class ConverterTimm(Converter.__class__):
     @classmethod
     def _init__class(cls):
         cls._registry = {
-            # timm.layers.grn.GlobalResponseNorm: getattr(cls, '_func_timm_GlobalResponseNorm'),
-            # timm.layers.norm.LayerNorm2d: getattr(cls, '_func_timm_LayerNorm2d'),
+            timm.layers.grn.GlobalResponseNorm: getattr(cls, '_func_timm_GlobalResponseNorm'),
+            timm.layers.norm.LayerNorm2d: getattr(cls, '_func_timm_LayerNorm2d'),
             timm.layers.norm_act.BatchNormAct2d: getattr(cls, '_func_timm_BatchNormAct2d'),
             timm.models._efficientnet_blocks.SqueezeExcite: getattr(cls, '_func_timm_SqueezeExcite'),
-            # timm.models.convnext.ConvNeXtBlock: getattr(cls, '_func_timm_ConvNeXtBlock'),
+            timm.models.convnext.ConvNeXtBlock: getattr(cls, '_func_timm_ConvNeXtBlock'),
         }
 
         return cls()
 
-    # @classmethod
-    # def _func_timm_GlobalResponseNorm(cls, layer):
-    #     if layer.channel_dim == -1:
-    #         layer.spatial_dim = (1, )
-    #         layer.wb_shape = (1, 1, -1)
-    #     else:
-    #         layer.spatial_dim = (2, )
-    #         layer.wb_shape = (1, -1, 1)
+    @classmethod
+    def _func_timm_GlobalResponseNorm(cls, layer):
+        if layer.channel_dim == -1:
+            layer.spatial_dim = (1, 2, 3)
+            layer.wb_shape = (1, 1, 1, 1, -1)
+        else:
+            layer.spatial_dim = (2, 3, 4)
+            layer.wb_shape = (1, -1, 1, 1, 1)
 
-    #     return layer
+        return layer
 
-    # @staticmethod
-    # def _timm_layernorm2dforward(self, x):
-    #     """
-    #         :NOTE:
-    #             it is a copy of timm.layers.norm.LayerNorm2d function with correct operations under dims
-    #     """
-    #     x = x.permute(0, 2, 1)
-    #     if self._fast_norm:
-    #         x = timm.layers.fast_norm.fast_layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
-    #     else:
-    #         x = nn.functional.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
-    #     x = x.permute(0, 2, 1)
+    @staticmethod
+    def _timm_layernorm2dforward(self, x):
+        """
+            :NOTE:
+                it is a copy of timm.layers.norm.LayerNorm2d function with correct operations under dims
+        """
+        x = x.permute(0, 2, 3, 4, 1)
+        if self._fast_norm:
+            x = timm.layers.fast_norm.fast_layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
+        else:
+            x = nn.functional.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
+        x = x.permute(0, 4, 1, 2, 3)
 
-    #     return x
+        return x
 
-    # @classmethod
-    # def _func_timm_LayerNorm2d(cls, layer):
-    #     layer.forward = types.MethodType(cls._timm_layernorm2dforward, layer)
+    @classmethod
+    def _func_timm_LayerNorm2d(cls, layer):
+        layer.forward = types.MethodType(cls._timm_layernorm2dforward, layer)
 
-    #     return layer
+        return layer
 
     @staticmethod
     def _timm_batchnormact2d_forward(self, x):
@@ -131,30 +131,30 @@ class ConverterTimm(Converter.__class__):
 
         return layer
 
-    # @staticmethod
-    # def _func_timm_convnextblockforward(self, x):
-    #     """
-    #         :NOTE:
-    #             it is a copy of timm.models.convnext.ConvNeXtBlock function with correct operations under dims
-    #     """
-    #     shortcut = x
-    #     x = self.conv_dw(x)
-    #     if self.use_conv_mlp:
-    #         x = self.norm(x)
-    #         x = self.mlp(x)
-    #     else:
-    #         x = x.permute(0, 2, 1)
-    #         x = self.norm(x)
-    #         x = self.mlp(x)
-    #         x = x.permute(0, 2, 1)
-    #     if self.gamma is not None:
-    #         x = x.mul(self.gamma.reshape(1, -1, 1))
+    @staticmethod
+    def _func_timm_convnextblockforward(self, x):
+        """
+            :NOTE:
+                it is a copy of timm.models.convnext.ConvNeXtBlock function with correct operations under dims
+        """
+        shortcut = x
+        x = self.conv_dw(x)
+        if self.use_conv_mlp:
+            x = self.norm(x)
+            x = self.mlp(x)
+        else:
+            x = x.permute(0, 2, 3, 4, 1)
+            x = self.norm(x)
+            x = self.mlp(x)
+            x = x.permute(0, 4, 1, 2, 3)
+        if self.gamma is not None:
+            x = x.mul(self.gamma.reshape(1, -1, 1, 1, 1))
 
-    #     x = self.drop_path(x) + self.shortcut(shortcut)
-    #     return x
+        x = self.drop_path(x) + self.shortcut(shortcut)
+        return x
 
-    # @classmethod
-    # def _func_timm_ConvNeXtBlock(cls, layer):
-    #     layer.forward = types.MethodType(cls._func_timm_convnextblockforward, layer)
+    @classmethod
+    def _func_timm_ConvNeXtBlock(cls, layer):
+        layer.forward = types.MethodType(cls._func_timm_convnextblockforward, layer)
 
-    #     return layer
+        return layer
