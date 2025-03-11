@@ -77,7 +77,7 @@ resnet_encoders = {
             'layers': [2, 2, 2, 2],
         },
         'pretrain': {
-            'in1k': tvresnet.ResNet18_Weights.IMAGENET1K_V1.url,
+            'in1kv1': tvresnet.ResNet18_Weights.IMAGENET1K_V1.url,
         }
     },
     'tv-resnet34': {
@@ -88,7 +88,7 @@ resnet_encoders = {
             'layers': [3, 4, 6, 3],
         },
         'pretrain': {
-            'in1k': tvresnet.ResNet34_Weights.IMAGENET1K_V1.url,
+            'in1kv1': tvresnet.ResNet34_Weights.IMAGENET1K_V1.url,
         }
     },
     'tv-resnet50': {
@@ -99,6 +99,8 @@ resnet_encoders = {
             'layers': [3, 4, 6, 3],
         },
         'pretrain': {
+            'in1kv1': tvresnet.ResNet50_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.ResNet50_Weights.IMAGENET1K_V2.url,
         }
     },
     'tv-resnet101': {
@@ -109,6 +111,8 @@ resnet_encoders = {
             'layers': [3, 4, 23, 3],
         },
         'pretrain': {
+            'in1kv1': tvresnet.ResNet101_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.ResNet101_Weights.IMAGENET1K_V2.url,
         }
     },
     'tv-resnet152': {
@@ -119,6 +123,8 @@ resnet_encoders = {
             'layers': [3, 8, 36, 3],
         },
         'pretrain': {
+            'in1kv1': tvresnet.ResNet152_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.ResNet152_Weights.IMAGENET1K_V2.url,
         }
     },
     'tv-resnext50_32x4d': {
@@ -131,6 +137,8 @@ resnet_encoders = {
             'width_per_group': 4,
         },
         'pretrain': {
+            'in1kv1': tvresnet.ResNeXt50_32X4D_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.ResNeXt50_32X4D_Weights.IMAGENET1K_V2.url,
         }
     },
     'tv-resnext101_32x4d': {
@@ -155,6 +163,8 @@ resnet_encoders = {
             'width_per_group': 8,
         },
         'pretrain': {
+            'in1kv1': tvresnet.ResNeXt101_32X8D_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.ResNeXt101_32X8D_Weights.IMAGENET1K_V2.url,
         }
     },
     'tv-resnext101_32x16d': {
@@ -191,6 +201,19 @@ resnet_encoders = {
             'width_per_group': 48,
         },
         'pretrain': {
+        }
+    },
+    'tv-wide_resnet50_2': {
+        'encoder': ResNetEncoder,
+        'params': {
+            'out_channels': (3, 64, 256, 512, 1024, 2048),
+            'block': Bottleneck,
+            'layers': [3, 4, 6, 3],
+            'width_per_group': 128,
+        },
+        'pretrain': {
+            'in1kv1': tvresnet.Wide_ResNet50_2_Weights.IMAGENET1K_V1.url,
+            'in1kv2': tvresnet.Wide_ResNet50_2_Weights.IMAGENET1K_V2.url,
         }
     },
 }

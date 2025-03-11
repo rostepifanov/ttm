@@ -8,8 +8,20 @@ from ttm.blocks.encoders.torchvision import resnet_encoders
 ENCODERS = resnet_encoders.keys()
 
 PRETRAINED = [
-    'tv-resnet18.in1k',
-    'tv-resnet34.in1k',
+    'tv-resnet18.in1kv1',
+    'tv-resnet34.in1kv1',
+    'tv-resnet50.in1kv1',
+    'tv-resnet50.in1kv2',
+    'tv-resnet101.in1kv1',
+    'tv-resnet101.in1kv2',
+    'tv-resnet152.in1kv1',
+    'tv-resnet152.in1kv2',
+    'tv-resnext50_32x4d.in1kv1',
+    'tv-resnext50_32x4d.in1kv2',
+    'tv-resnext101_32x8d.in1kv1',
+    'tv-resnext101_32x8d.in1kv2',
+    'tv-wide_resnet50_2.in1kv1',
+    'tv-wide_resnet50_2.in1kv2',
 ]
 
 @pytest.mark.resnet
