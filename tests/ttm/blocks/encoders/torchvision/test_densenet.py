@@ -10,7 +10,7 @@ ENCODERS = densenet_encoders.keys()
 @pytest.mark.densenet
 @pytest.mark.encoders
 @pytest.mark.parametrize('name', ENCODERS)
-def test_ResNetEncoder_CASE_creation(name):
+def test_DenseNetEncoder_CASE_creation(name):
     IN_CHANNELS = 3
     DEPTH = 5
 

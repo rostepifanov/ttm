@@ -18,6 +18,13 @@ class SegmentationSingleHeadModel(nn.Module):
                 nn.init.constant_(node.weight, 1)
                 nn.init.constant_(node.bias, 0)
 
+    def fuse(self):
+        """
+            :NOTE:
+                function to fuse conv and batch norm layers
+        """
+        raise NotImplementedError
+
     def forward(self, x):
         """
             :args:

@@ -4,6 +4,7 @@ from functools import partial
 from timm.layers.activations import Swish
 from timm.models.efficientnet import EfficientNet, decode_arch_def, round_channels, default_cfgs
 
+from ttm.utils import fuse_conv_bn
 from ttm.blocks.encoders.base import EncoderBase
 from ttm.blocks.encoders.converters import Converter3d, ConverterTimm
 
@@ -241,6 +242,22 @@ class EfficientNetEncoder(EfficientNet, EncoderBase):
             self.blocks[self._stage_idxs[1]:self._stage_idxs[2]],
             self.blocks[self._stage_idxs[2]:],
         ]
+
+    def fuse(self):
+        self.eval()
+
+        weight, bias = fuse_conv_bn(
+            self.conv_stem,
+            self.bn1,
+        )
+
+        self.conv_stem.weight = weight
+        self.conv_stem.bias = bias
+
+        if isinstance(self.bn1.drop, nn.Identity):
+            self.bn1 = self.bn1.act
+        else:
+            self.bn1 = nn.Sequential(self.bn1.drop , self.bn1.act)
 
     def forward(self, x):
         """

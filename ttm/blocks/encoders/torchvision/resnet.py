@@ -3,6 +3,7 @@ import torchvision.models.resnet as tvresnet
 
 from torchvision.models.resnet import ResNet, BasicBlock, Bottleneck
 
+from ttm.utils import fuse_conv_bn
 from ttm.blocks.encoders.base import EncoderBase
 from ttm.blocks.encoders.converters import Converter3d
 
@@ -48,6 +49,19 @@ class ResNetEncoder(ResNet, EncoderBase):
             self.layer3,
             self.layer4,
         ]
+
+    def fuse(self):
+        self.eval()
+
+        weight, bias = fuse_conv_bn(
+            self.conv1,
+            self.bn1,
+        )
+
+        self.conv1.weight = weight
+        self.conv1.bias = bias
+
+        self.bn1 = nn.Identity()
 
     def forward(self, x):
         """

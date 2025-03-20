@@ -1,6 +1,13 @@
 class EncoderBase(object):
     """Base class of all encoders in ttm
     """
+    def fuse(self):
+        """
+            :NOTE:
+                function to fuse conv and batch norm layers
+        """
+        raise NotImplementedError
+
     @property
     def out_channels(self):
         """

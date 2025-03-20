@@ -1,5 +1,6 @@
 import pytest
 
+import copy
 import torch
 
 from ttm.blocks.encoders import Encoder
@@ -104,3 +105,32 @@ def test_EfficientNetEncoder_CASE_pretrain(config):
     for nchannels, yi in zip(encoder.out_channels, y):
         assert yi.shape[0] == x.shape[0]
         assert yi.shape[1] == nchannels
+
+@pytest.mark.efficientnet
+@pytest.mark.encoders
+@pytest.mark.fusing
+@pytest.mark.parametrize('name', ENCODERS)
+def test_EfficientNetEncoder_CASE_fusing(name):
+    IN_CHANNELS = 3
+    DEPTH = 5
+
+    encoder = Encoder(
+        in_channels=IN_CHANNELS,
+        depth=DEPTH,
+        name=name
+    ).to(torch.float64)
+
+    fused_encoder = copy.deepcopy(encoder)
+    fused_encoder.fuse()
+
+    encoder.eval()
+    fused_encoder.eval()
+
+    x = torch.randn(1, IN_CHANNELS, 32, 32, 32, dtype=torch.float64)
+
+    with torch.no_grad():
+        y = encoder(x)
+        fused_y = fused_encoder(x)
+
+    for yi, fused_yi in zip(y, fused_y):
+        assert torch.allclose(yi, fused_yi, atol=1e-3)

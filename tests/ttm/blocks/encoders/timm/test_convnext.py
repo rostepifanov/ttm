@@ -36,7 +36,7 @@ def test_ConvNeXtEncoder_CASE_creation(name):
 @pytest.mark.convnext
 @pytest.mark.encoders
 @pytest.mark.parametrize('name', ENCODERS)
-def test_MobileNetEncoder_CASE_unused_layer_check(name):
+def test_ConvNeXtEncoder_CASE_unused_layer_check(name):
     IN_CHANNELS = 3
     DEPTH = 5
 
