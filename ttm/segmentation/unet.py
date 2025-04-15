@@ -1,6 +1,6 @@
 import torch, torch.nn as nn
 
-from ttm.blocks import Encoder, SegmentationHead, SpatialChannelSqueezeExcitationLayer
+from ttm.blocks import Encoder, SegmentationHead, SpatialChannelSqueezeExcitationLayer, ConvNormAct
 from ttm.segmentation.base import SegmentationSingleHeadModel
 
 class UnetDecoderBlock(nn.Module):
@@ -27,30 +27,22 @@ class UnetDecoderBlock(nn.Module):
             in_channels + skip_channels
         )
 
-        self.conv1 = nn.Sequential(
-            nn.Conv3d(
-                in_channels=in_channels + skip_channels,
-                out_channels=out_channels,
-                kernel_size=3,
-                padding=1,
-                stride=1,
-                bias=False,
-            ),
-            nn.BatchNorm3d(out_channels),
-            nn.ReLU(inplace=True),
+        self.conv1 = ConvNormAct(
+            in_channels=in_channels + skip_channels,
+            out_channels=out_channels,
+            kernel_size=3,
+            padding=1,
+            stride=1,
+            bias=False,
         )
 
-        self.conv2 = nn.Sequential(
-            nn.Conv3d(
-                in_channels=out_channels,
-                out_channels=out_channels,
-                kernel_size=3,
-                padding=1,
-                stride=1,
-                bias=False,
-            ),
-            nn.BatchNorm3d(out_channels),
-            nn.ReLU(inplace=True),
+        self.conv2 = ConvNormAct(
+            in_channels=out_channels,
+            out_channels=out_channels,
+            kernel_size=3,
+            padding=1,
+            stride=1,
+            bias=False,
         )
 
         self.attention2 = SpatialChannelSqueezeExcitationLayer(
