@@ -49,8 +49,18 @@ class UnetDecoderBlock(nn.Module):
             out_channels
         )
 
+        self.shortcut = nn.Conv3d(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=1,
+            padding=0,
+            stride=1,
+            bias=False,
+        )
+
     def forward(self, x, skip=None, shape=None):
         x = nn.functional.interpolate(x, size=shape[2:], mode='nearest')
+        shortcut = self.shortcut(x)
 
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
@@ -60,7 +70,7 @@ class UnetDecoderBlock(nn.Module):
         x = self.conv2(x)
         x = self.attention2(x)
 
-        return x
+        return x + shortcut
 
 class UnetDecoder(nn.Module):
     """Unet decoder
