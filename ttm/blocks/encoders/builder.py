@@ -42,7 +42,7 @@ class Encoder(object):
 
         node.weight = nn.parameter.Parameter(nweight)
 
-    def __call__(self, in_channels=3, depth=5, name='tv-resnet34', pretrain=None):
+    def __call__(self, in_channels=3, depth=5, name='tv-resnet34', pretrain=None, **kwargs):
         """
             :args:
                 in_channels: int
@@ -63,7 +63,8 @@ class Encoder(object):
         except:
             raise KeyError('Wrong encoder name `{}`, supported encoders: {}'.format(name, list(ttm_encoders.keys())))
 
-        params = dict(ttm_encoders[name]['params'])
+        params = kwargs
+        params.update(ttm_encoders[name]['params'])
         params.update(depth=depth)
 
         if pretrain is not None:

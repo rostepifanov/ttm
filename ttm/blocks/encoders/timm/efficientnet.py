@@ -65,7 +65,7 @@ def gen_efficientnet_lite_kwargs(channel_multiplier=1.0, depth_multiplier=1.0, d
 
     return kwargs
 
-def gen_efficientnetv2_base_kwargs(channel_multiplier=1.0, depth_multiplier=1.0):
+def gen_efficientnetv2_base_kwargs(channel_multiplier=1.0, depth_multiplier=1.0, drop_path_rate=0.0):
     """
         :NOTE:
             it is a modified copy of _gen_efficientnetv2_base from timm package
@@ -87,6 +87,7 @@ def gen_efficientnetv2_base_kwargs(channel_multiplier=1.0, depth_multiplier=1.0)
         stem_size=32,
         round_chs_fn=round_chs_fn,
         act_layer=nn.SiLU,
+        drop_path_rate=drop_path_rate,
     )
 
     return kwargs
@@ -327,8 +328,9 @@ class EfficientNetV2BaseEncoder(EfficientNetEncoder):
         weights=None,
         channel_multiplier=1.0,
         depth_multiplier=1.0,
+        drop_path_rate=0.0,
     ):
-        kwargs = gen_efficientnetv2_base_kwargs(channel_multiplier, depth_multiplier)
+        kwargs = gen_efficientnetv2_base_kwargs(channel_multiplier, depth_multiplier, drop_path_rate)
         super().__init__(stage_idxs, out_channels, depth, weights, **kwargs)
 
         ConverterTimm.convert(self)
